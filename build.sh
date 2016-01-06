@@ -9,8 +9,6 @@ set -e
 REPO="wassname"
 DATE=`date +%Y.%m.%d`
 
-DEVPI_VERSION="2.5.3"
-
 : ${DOCKER_BUILD_OPTIONS:="--pull=true"}
 
 image="${REPO}/devpi"

@@ -1,27 +1,15 @@
-#
-FROM muccg/python-base:debian8-2.7
-MAINTAINER https://github.com/muccg
+FROM python:3.4-slim
+MAINTAINER wassname@wassname.org
 
-ARG DEVPI_VERSION
-ARG PIP_INDEX_URL=https://pypi.python.org/simple/
-ARG PIP_TRUSTED_HOST=127.0.0.1
-
-ENV DEVPI_VERSION $DEVPI_VERSION
-
-RUN NO_PROXY=$PIP_TRUSTED_HOST pip --trusted-host $PIP_TRUSTED_HOST install -i $PIP_INDEX_URL --upgrade \
+RUN pip --no-cache-dir install --upgrade \
   "devpi-client>=2.3" "requests>=2.9.0" \
-  "devpi-server==${DEVPI_VERSION:-2.5.3}"
-
-EXPOSE 3141
-VOLUME /data
+  "devpi-server==2.5.3"
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-# Drop privileges, set home for ccg-user
-USER ccg-user
-ENV HOME /data
+EXPOSE 3141
+VOLUME /data
 WORKDIR /data
-
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["devpi"]

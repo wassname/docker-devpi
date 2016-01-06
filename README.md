@@ -9,7 +9,7 @@ You can use this container to speed up the `pip install` parts of your docker bu
 
 ## Installation
 
-`docker pull muccg/docker-devpi`
+`docker pull wassname/docker-devpi`
 
 ## Quickstart
 
@@ -19,7 +19,7 @@ Start using
 docker run -d --name devpi \
     --publish 3141:3141 \
     --volume /srv/docker/devpi:/data \
-    --env=DEVPI_PASSWORD=changemetoyoulongsecret \
+    --env=DEVPI_PASSWORD=changemetoyourlongsecret \
     --restart always \
     muccg/docker-devpi
 ```
@@ -31,7 +31,7 @@ Please set DEVPI_PASSWORD to a secret otherwise an attacker can *execute arbitra
 
 To use this devpi cache to speed up your dockerfile builds, add use the code below in your dockerfiles. This will add the devpi container an optional cache for pip. The docker containers will try using port 3141 on the docker host first and fall back on the normal pypi servers without breaking the build.
 
-```Dockerfile
+```bash
 # Install netcat for ip route
 RUN apt-get update \
  && apt-get install -y netcat \
@@ -56,8 +56,8 @@ pip wheel --download=packages --wheel-dir=wheelhouse -r requirements.txt
 pip install "devpi-client>=2.3.0" \
 && export HOST_IP=$(ip route| awk '/^default/ {print $3}') \
 && if devpi use http://$HOST_IP:3141>/dev/null; then \
-       devpi use http://$HOST_IP:3141/${DEVPI_USER:-app}/${DEVPI_INDEX:-dev} --set-cfg \
-    && devpi login ${DEVPI_USER:-app} --password=$DEVPI_PASSWORD  \
+       devpi use http://$HOST_IP:3141/root/public --set-cfg \
+    && devpi login root --password=$DEVPI_PASSWORD  \
     && devpi upload --from-dir --formats=* ./wheelhouse ./packages; \
 else \
     echo No started devpi container found at http://$HOST_IP:3141; \
